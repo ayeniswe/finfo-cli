@@ -1,0 +1,3 @@
+mod price;
+
+fn main() {}
