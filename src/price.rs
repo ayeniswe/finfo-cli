@@ -27,9 +27,45 @@ impl Price {
     fn to_range(&self) -> f32 {
         self.high - self.low
     }
+    fn to_direction(&self) -> char {
+        if self.close > self.open {
+            return 'U'
+        }
+        else if self.close < self.open {
+            return 'D'
+        }
+        else {
+            return 'N'
+        }
+    }
 }
 
 //////// PRICE //////////
+#[test]
+fn test_to_direction() {
+    let price_ex1: Price = Price {
+        open: 5.0,
+        close: 1.0,
+        low: 0.5,
+        high: 13.0,
+    };
+    let price_ex2: Price = Price {
+        open: 1.0,
+        close: 5.0,
+        low: 5.5,
+        high: 1.0,
+    };
+    let price_ex3: Price = Price {
+        open: 5.0,
+        close: 5.0,
+        low: 5.5,
+        high: 1.0,
+    };
+    assert_eq!(price_ex1.to_direction(), 'D');
+    assert_eq!(price_ex2.to_direction(), 'U');
+    assert_eq!(price_ex3.to_direction(), 'N');
+}
+
 #[test]
 fn test_to_range() {
     let price_ex1: Price = Price {
