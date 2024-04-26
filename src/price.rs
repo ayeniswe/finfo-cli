@@ -141,10 +141,43 @@ impl Price {
             return self.open - self.low;
         }
     }
+    /// Returns `true` if the candle is relatively weak based on
+    /// the gauge level otherwise `false`
+    ///
+    /// Default level is: `1.0`
+    ///
+    /// Usually seen when candle wicks in current direction is
+    /// relatively stronger than the body of a candle
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let bar: Price = Price {
+    ///     open: 5.0,
+    ///     close: 1.0,
+    ///     low: 0.5,
+    ///     high: 13.0,
+    ///  };
+    /// assert!eq(bar.is_weak(), false)
+    /// ```
+    fn is_weak(&self, gauge: Option<f32>) -> bool {
+        let gauge: f32 = gauge.or(Some(1.0)).unwrap();
+        let body: f32 = self.close - self.open;
+        if body == 0.0 {
+            return false;
+        } else if body > 0.0 {
+            return self.to_top_wick() / body > gauge;
+        } else {
+            return self.to_bot_wick() / body < -gauge;
+        };
+    }
     /// Returns `true` if the candle is relatively strong based on
     /// the gauge level otherwise `false`
     ///
     /// Default level is: `2.0`
+    ///
+    /// Usually seen when the body of
+    /// a candle is strong compared to its opposing direction
     ///
     /// # Examples
     ///
@@ -171,6 +204,31 @@ impl Price {
 }
 
 //////// PRICE //////////
+#[test]
+fn test_is_weak() {
+    let bar1: Price = Price {
+        open: 7.0,
+        close: 5.0,
+        low: 2.5,
+        high: 13.0,
+    };
+    let bar2: Price = Price {
+        open: 1.0,
+        close: 5.0,
+        low: 5.5,
+        high: 6.0,
+    };
+    let bar3: Price = Price {
+        open: 5.0,
+        close: 5.0,
+        low: 5.5,
+        high: 6.0,
+    };
+    assert_eq!(bar1.is_weak(None), true);
+    assert_eq!(bar2.is_weak(Some(1.0)), false);
+    assert_eq!(bar3.is_weak(None), false);
+}
+
 #[test]
 fn test_is_strong() {
     let bar1: Price = Price {
