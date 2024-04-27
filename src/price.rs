@@ -49,20 +49,18 @@ impl Price {
 
     /// Print the direction and strength of a candle
     pub fn show_traits(&self) {
-        let dir = self.to_direction();
-        if dir == 'U' {
-            println!("Direction: ⬆️");
-        } else if dir == 'D' {
-            println!("Direction: ⬇️");
-        } else {
-            println!("Direction: ⬅️➡️");
-        }
-        if self.is_strong(None) {
-            println!("Strong: 💪");
-        } else {
-            println!("Strong: ❌");
-        }
-        println!("");
+        let direction = self.to_direction();
+        let direction = match direction {
+            'U' => "⬆️",
+            'D' => "⬇️",
+            _ => "⬅️➡️",
+        };
+        println!("Direction: {}", direction);
+
+        let strong_indicator = if self.is_strong(None) { "💪" } else { "❌" };
+        println!("Strong: {}", strong_indicator);
+
+        println!();
     }
 
     /// Returns the percentage of movement in price
