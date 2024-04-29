@@ -1,3 +1,6 @@
+use crate::color::{GREEN, RED, RESET, YELLOW};
+use std::io::Write;
+
 /// Open-High-Low-Close (OHLC)
 #[derive(Default)]
 pub struct Price {
@@ -47,20 +50,20 @@ impl Price {
         println!("-------------------------------------------------------------");
     }
 
-    /// Print the direction and strength of a candle
-    pub fn show_traits(&self) {
-        let direction = self.to_direction();
-        let direction = match direction {
-            'U' => "⬆️",
-            'D' => "⬇️",
-            _ => "⬅️➡️",
+    /// Write the direction and strength of a candle
+    pub fn show_direction<T: Write>(&self, mut output: T) {
+        let _ = write!(output, "Direction: ");
+        let _ = match self.to_direction() {
+            'U' => writeln!(output, "{}⬆ Up{}", GREEN, RESET),
+            'D' => writeln!(output, "{}⬇ Down{}", RED, RESET),
+            _ => writeln!(output, "{}⬌ Side{}", YELLOW, RESET),
         };
-        println!("Direction: {}", direction);
+    }
 
-        let strong_indicator = if self.is_strong(None) { "💪" } else { "❌" };
-        println!("Strong: {}", strong_indicator);
-
-        println!();
+    /// Wri the strength of a candle
+    pub fn show_strong<T: Write>(&self, mut output: T) {
+        let strong_indicator = if self.is_strong(None) { '✅' } else { '❌' };
+        let _ = writeln!(output, "Strong: {}", strong_indicator);
     }
 
     /// Returns the percentage of movement in price
@@ -254,6 +257,8 @@ impl Price {
 //////// PRICE //////////
 #[cfg(test)]
 mod tests {
+    use std::io::Read;
+
     use super::*;
 
     #[test]
@@ -383,5 +388,21 @@ mod tests {
         assert_eq!(bar1.to_percent(), -0.8);
         assert_eq!(bar2.to_percent(), 4.0);
         assert_eq!(bar3.to_percent(), 0.0);
+    }
+
+    #[test]
+    fn test_show_direction() {
+        let bar1: Price = Price {
+            open: 3.0,
+            close: 5.0,
+            low: 1.6,
+            high: 8.54,
+        };
+        let mut output: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        bar1.show_direction(&mut output);
+        assert_eq!(
+            output.into_inner(),
+            b"Direction: \x1b[32m\xE2\xAC\x86 Up\x1b[0m\n"
+        );
     }
 }
