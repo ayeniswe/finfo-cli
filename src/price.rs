@@ -3,31 +3,28 @@ use std::io::Write;
 
 /// Open-High-Low-Close (OHLC)
 #[derive(Default)]
-pub struct Price {
+pub struct OHLC {
     pub open: f32,
     pub high: f32,
     pub low: f32,
     pub close: f32,
 }
 
-/// Popular trends in price
-///
-/// TODO: may contain array of prices or current price
-///
+/// Popular trends in OHLC
 ///
 /// `Custom` field allows for
 /// endless trends to be created based on
 /// needs
-pub struct Trends {
-    pub hourly: Price,
-    pub daily: Price,
-    pub weekly: Price,
-    pub monthly: Price,
-    pub yearly: Price,
-    pub custom: Price,
+pub struct History {
+    pub hourly: OHLC,
+    pub daily: OHLC,
+    pub weekly: OHLC,
+    pub monthly: OHLC,
+    pub yearly: OHLC,
+    pub custom: OHLC,
 }
 
-impl Price {
+impl OHLC {
     pub fn new(open: f32, high: f32, low: f32, close: f32) -> Self {
         return Self {
             open,
@@ -66,12 +63,12 @@ impl Price {
         let _ = writeln!(output, "Strong: {}", strong_indicator);
     }
 
-    /// Returns the percentage of movement in price
+    /// Returns the percentage of movement in OHLC
     ///
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -82,12 +79,12 @@ impl Price {
     pub fn to_percent(&self) -> f32 {
         (self.close - self.open) / self.open
     }
-    /// Returns the raw point of movement in price
+    /// Returns the raw point of movement in OHLC
     ///
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -99,12 +96,12 @@ impl Price {
         self.close - self.open
     }
 
-    /// Returns the total range of movement in price
+    /// Returns the total range of movement in OHLC
     ///
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -116,7 +113,7 @@ impl Price {
         self.high - self.low
     }
 
-    /// Returns the direction of price movement
+    /// Returns the direction of OHLC movement
     ///
     /// Movement can be one of the following:
     ///
@@ -129,7 +126,7 @@ impl Price {
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -152,7 +149,7 @@ impl Price {
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -174,7 +171,7 @@ impl Price {
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -202,7 +199,7 @@ impl Price {
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -233,7 +230,7 @@ impl Price {
     /// # Examples
     ///
     /// ```
-    /// let bar: Price = Price {
+    /// let bar: OHLC = OHLC {
     ///     open: 5.0,
     ///     close: 1.0,
     ///     low: 0.5,
@@ -254,7 +251,7 @@ impl Price {
     }
 }
 
-//////// PRICE //////////
+//////// OHLC //////////
 #[cfg(test)]
 mod tests {
     use std::io::Read;
@@ -263,19 +260,19 @@ mod tests {
 
     #[test]
     fn test_is_weak() {
-        let bar1: Price = Price {
+        let bar1: OHLC = OHLC {
             open: 7.0,
             close: 5.0,
             low: 2.5,
             high: 13.0,
         };
-        let bar2: Price = Price {
+        let bar2: OHLC = OHLC {
             open: 1.0,
             close: 5.0,
             low: 5.5,
             high: 6.0,
         };
-        let bar3: Price = Price {
+        let bar3: OHLC = OHLC {
             open: 5.0,
             close: 5.0,
             low: 5.5,
@@ -288,19 +285,19 @@ mod tests {
 
     #[test]
     fn test_is_strong() {
-        let bar1: Price = Price {
+        let bar1: OHLC = OHLC {
             open: 5.0,
             close: 1.0,
             low: 0.5,
             high: 13.0,
         };
-        let bar2: Price = Price {
+        let bar2: OHLC = OHLC {
             open: 1.0,
             close: 5.0,
             low: 5.5,
             high: 6.0,
         };
-        let bar3: Price = Price {
+        let bar3: OHLC = OHLC {
             open: 5.0,
             close: 5.0,
             low: 5.5,
@@ -313,19 +310,19 @@ mod tests {
 
     #[test]
     fn test_to_direction() {
-        let bar1: Price = Price {
+        let bar1: OHLC = OHLC {
             open: 5.0,
             close: 1.0,
             low: 0.5,
             high: 13.0,
         };
-        let bar2: Price = Price {
+        let bar2: OHLC = OHLC {
             open: 1.0,
             close: 5.0,
             low: 5.5,
             high: 6.0,
         };
-        let bar3: Price = Price {
+        let bar3: OHLC = OHLC {
             open: 5.0,
             close: 5.0,
             low: 5.5,
@@ -338,7 +335,7 @@ mod tests {
 
     #[test]
     fn test_to_range() {
-        let bar1: Price = Price {
+        let bar1: OHLC = OHLC {
             open: 5.0,
             close: 1.0,
             low: 0.5,
@@ -349,13 +346,13 @@ mod tests {
 
     #[test]
     fn test_to_point() {
-        let bar1: Price = Price {
+        let bar1: OHLC = OHLC {
             open: 5.0,
             close: 1.0,
             low: 0.5,
             high: 13.0,
         };
-        let bar2: Price = Price {
+        let bar2: OHLC = OHLC {
             open: 1.0,
             close: 5.0,
             low: 5.5,
@@ -367,19 +364,19 @@ mod tests {
 
     #[test]
     fn test_to_percent() {
-        let bar1: Price = Price {
+        let bar1: OHLC = OHLC {
             open: 5.0,
             close: 1.0,
             low: 0.5,
             high: 13.0,
         };
-        let bar2: Price = Price {
+        let bar2: OHLC = OHLC {
             open: 1.0,
             close: 5.0,
             low: 5.5,
             high: 6.0,
         };
-        let bar3: Price = Price {
+        let bar3: OHLC = OHLC {
             open: 1.0,
             close: 1.0,
             low: 0.6,
@@ -392,7 +389,7 @@ mod tests {
 
     #[test]
     fn test_show_direction() {
-        let bar1: Price = Price {
+        let bar1: OHLC = OHLC {
             open: 3.0,
             close: 5.0,
             low: 1.6,
