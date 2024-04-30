@@ -58,12 +58,13 @@ impl OHLC {
     /// To prevent losing precision specfiy
     /// the level of `precision` after decimal needed
     ///
-    pub fn show_ohlc(&self, precision: usize) {
-        print!(" [Open] - {1:.0$}", precision, self.open);
-        print!("  [High] - {1:.0$}", precision, self.high);
-        print!("  [Low] - {1:.0$}", precision, self.low);
-        println!("  [Close] - {1:.0$}", precision, self.close);
-        println!("-------------------------------------------------------------");
+    pub fn show_ohlc<T: Write>(&self, mut output: T, precision: usize) {
+        let _ = write!(output, " [Open] - {1:.0$}", precision, self.open);
+        let _ = write!(output, "  [High] - {1:.0$}", precision, self.high);
+        let _ = write!(output, "  [Low] - {1:.0$}", precision, self.low);
+        let _ = writeln!(output, "  [Close] - {1:.0$}", precision, self.close);
+        let sep = "-".repeat(61);
+        let _ = writeln!(output, "{}", sep);
     }
 
     /// Write the direction and strength of a candle
@@ -408,6 +409,7 @@ mod tests {
 
     #[test]
     fn test_show_direction() {
+        // mising test for neutral and down
         let bar1: OHLC = OHLC {
             open: 3.0,
             close: 5.0,
@@ -420,5 +422,25 @@ mod tests {
             output.into_inner(),
             b"Direction: \x1b[32m\xE2\xAC\x86 Up\x1b[0m\n"
         );
+    }
+
+    #[test]
+    fn test_show_ohlc() {
+        let bar1: OHLC = OHLC::new(4.03, 10.0, 1.0, 6.0);
+        let mut output: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        bar1.show_ohlc(&mut output, 2);
+        assert_eq!(
+            output.into_inner(),
+            b" [Open] - 4.03  [High] - 10.00  [Low] - 1.00  [Close] - 6.00\n-------------------------------------------------------------\n"
+        );
+    }
+
+    #[test]
+    fn test_show_strong() {
+        // missing test for green check
+        let bar1: OHLC = OHLC::new(4.03, 10.0, 1.0, 6.0);
+        let mut output: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        bar1.show_strong(&mut output);
+        assert_eq!(output.into_inner(), b"Strong: \xE2\x9D\x8C\n");
     }
 }
