@@ -12,16 +12,35 @@ pub struct OHLC {
 
 /// Popular trends in OHLC
 ///
-/// `Custom` field allows for
-/// endless trends to be created based on
-/// needs
+/// `timeframe` field allows to store
+/// specifed timeframe
 pub struct History {
-    pub hourly: OHLC,
-    pub daily: OHLC,
-    pub weekly: OHLC,
-    pub monthly: OHLC,
-    pub yearly: OHLC,
-    pub custom: OHLC,
+    pub hourly: Vec<OHLC>,
+    pub daily: Vec<OHLC>,
+    pub weekly: Vec<OHLC>,
+    pub monthly: Vec<OHLC>,
+    pub yearly: Vec<OHLC>,
+    pub timeframe: Vec<OHLC>,
+}
+
+impl History {
+    pub fn new(
+        hourly: Vec<OHLC>,
+        daily: Vec<OHLC>,
+        weekly: Vec<OHLC>,
+        monthly: Vec<OHLC>,
+        yearly: Vec<OHLC>,
+        timeframe: Vec<OHLC>,
+    ) -> Self {
+        return Self {
+            hourly,
+            daily,
+            weekly,
+            monthly,
+            yearly,
+            timeframe,
+        };
+    }
 }
 
 impl OHLC {
