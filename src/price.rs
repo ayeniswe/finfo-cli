@@ -409,18 +409,41 @@ mod tests {
 
     #[test]
     fn test_show_direction() {
-        // mising test for neutral and down
         let bar1: OHLC = OHLC {
             open: 3.0,
             close: 5.0,
             low: 1.6,
             high: 8.54,
         };
-        let mut output: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
-        bar1.show_direction(&mut output);
+        let bar2: OHLC = OHLC {
+            open: 5.0,
+            close: 1.0,
+            low: 0.5,
+            high: 13.0,
+        };
+        let bar3: OHLC = OHLC {
+            open: 5.0,
+            close: 5.0,
+            low: 5.5,
+            high: 6.0,
+        };
+        let mut output1: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        let mut output2: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        let mut output3: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        bar1.show_direction(&mut output1);
+        bar2.show_direction(&mut output2);
+        bar3.show_direction(&mut output3);
         assert_eq!(
-            output.into_inner(),
+            output1.into_inner(),
             b"Direction: \x1b[32m\xE2\xAC\x86 Up\x1b[0m\n"
+        );
+        assert_eq!(
+            output2.into_inner(),
+            b"Direction: \x1b[31m\xE2\xAC\x87 Down\x1b[0m\n"
+        );
+        assert_eq!(
+            output3.into_inner(),
+            b"Direction: \x1b[33m\xE2\xAC\x8C Side\x1b[0m\n"
         );
     }
 
@@ -437,10 +460,13 @@ mod tests {
 
     #[test]
     fn test_show_strong() {
-        // missing test for green check
-        let bar1: OHLC = OHLC::new(4.03, 10.0, 1.0, 6.0);
-        let mut output: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
-        bar1.show_strong(&mut output);
-        assert_eq!(output.into_inner(), b"Strong: \xE2\x9D\x8C\n");
+        let bar1: OHLC = OHLC::new(4.0, 10.0, 1.0, 6.0);
+        let bar2: OHLC = OHLC::new(5.0, 13.0, 0.5, 1.0);
+        let mut output1: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        let mut output2: std::io::Cursor<Vec<u8>> = std::io::Cursor::new(Vec::<u8>::new());
+        bar1.show_strong(&mut output1);
+        bar2.show_strong(&mut output2);
+        assert_eq!(output1.into_inner(), b"Strong: \xE2\x9D\x8C\n");
+        assert_eq!(output2.clone().into_inner(), b"Strong: \xE2\x9C\x85\n");
     }
 }
