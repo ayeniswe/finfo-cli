@@ -274,8 +274,6 @@ impl OHLC {
 //////// OHLC //////////
 #[cfg(test)]
 mod tests {
-    use std::io::Read;
-
     use super::*;
 
     #[test]
