@@ -83,12 +83,15 @@ fn main_menu(cmd_name: &str) {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    let mut args_iter = args.iter().skip(1); // skip name of the program
 
-    for arg in args.iter() {
-        if arg == "-h" || arg == "--help" {
-            main_menu(&args[0])
-        } else {
-            main_menu(&args[0])
-        }
+    // Set current arg to observe
+    let empty_str = String::from("");
+    let arg = args_iter.next().unwrap_or(&empty_str);
+
+    if arg == "-h" || arg == "--help" {
+        main_menu(&args[0])
+    } else {
+        main_menu(&args[0])
     }
 }
