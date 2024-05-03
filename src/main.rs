@@ -1,7 +1,43 @@
 pub mod color;
 pub mod price;
 
+fn finfo_text_art() {
+    println!(
+        "{} **** ******  ******  *****        ***  **** ******      ***  ***{}",
+        color::GREEN,
+        color::RESET
+    );
+    println!(
+        "{} * **** ****  **  **  * ** *       * *  * **** ****    ***\\\\  //***{}",
+        color::GREEN,
+        color::RESET
+    );
+    println!(" * *          **  **  * * * *      * *  * *           ***  \\\\//  ***");
+    println!(" **** ******  **  **  * *   * *    * *  **** ******  ***    \\\\    ***");
+    println!(" ****** ****  **  **  * *    * *   * *  ****** ****  ***   //\\\\   ***");
+    println!(" * *          **  **  * *     * *  * *  * *          ***  //  \\\\  ***");
+    println!(" * *          **  **  * *      * * * *  * *           ***//    \\\\***",);
+    println!(
+        "{} * *          **  **  * *       * ** *  * *            ***      ***{}",
+        color::GREEN,
+        color::RESET
+    );
+    println!(
+        "{} ***          ******  * *        *** *  ***             ***    ***{}",
+        color::GREEN,
+        color::RESET
+    );
+}
+
 fn main_menu(cmd_name: &str) {
+    // Title
+    println!();
+    finfo_text_art();
+    println!();
+    println!(
+        "Realtime tool for monitoring stocks, cryptocurrencies,\nand many other financial market"
+    );
+    println!();
     // Usage list
     println!(
         "Usage: {}{} [OPTIONS]... TICKER [COMMAND]{}",
@@ -9,8 +45,6 @@ fn main_menu(cmd_name: &str) {
         cmd_name,
         color::RESET
     );
-    // Title
-    println!("Realtime tool for monitoring stocks, cryptocurrencies,\nand many other financial market");
     println!(
         "Example: {}{} -N 'appl'{}",
         color::FAINT,
@@ -48,7 +82,6 @@ fn main_menu(cmd_name: &str) {
 }
 
 fn main() {
-
     let args: Vec<String> = std::env::args().collect();
 
     for arg in args.iter() {
@@ -58,5 +91,4 @@ fn main() {
             main_menu(&args[0])
         }
     }
-    
 }
