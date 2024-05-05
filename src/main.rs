@@ -116,6 +116,11 @@ impl Default for Options {
     }
 }
 
+fn is_option(arg: &str, short: &str, long: &str) -> bool {
+    let option: &str = arg.trim_start_matches("-");
+    return arg.starts_with("--") && long.starts_with(option)
+        || arg.starts_with("-") && short == option;
+}
 fn main() {
     // Gather arguments from terminal
     let args: Vec<String> = std::env::args().collect();
@@ -126,60 +131,60 @@ fn main() {
     let mut args_iter: std::iter::Peekable<std::slice::Iter<'_, String>> = args.iter().peekable();
     let mut arg_option: Option<&String> = args_iter.next();
     while arg_option.is_some() {
-        // Strip short and long option indicatiors
-        let original_arg: String = arg_option.unwrap().to_string();
-        let arg: String = arg_option.unwrap().trim_start_matches("-").to_string();
+        let arg = arg_option.unwrap();
 
         match arg.as_str() {
             // Explore commands
-            arg if !original_arg.starts_with("--") && !original_arg.starts_with("-") => {
-                // Main call <exe name>
-                if arg == args[0] {
-                    if args.len() == 1 {
+            arg if !arg.starts_with("-") => {
+                match arg {
+                    // Main call <exe name>
+                    arg if arg == args[0] => {
+                        if args.len() == 1 {
+                            show_usage(&args[0]);
+                            process::exit(0);
+                        }
+                        // skip main call if more arguments...
+                    }
+                    // Historical information
+                    arg if "history".starts_with(arg) => {
+                        // TODO - Ticker will consume Info which impl InfoBuilder trait
+                        log(
+                            stdout().lock(),
+                            "Getting historical ticker info.....",
+                            options.verbose,
+                        );
+                        break;
+                    }
+                    // Last command should be ticker symbol
+                    arg if arg == &args[args.len() - 1] => {
+                        log(
+                            stdout().lock(),
+                            "Getting basic ticker info.....",
+                            options.verbose,
+                        );
+                    }
+                    // Command not found
+                    _ => {
+                        log(
+                            stdout().lock(),
+                            &format!("{}: invalid command '{}'", &args[0], arg),
+                            true,
+                        );
                         show_usage(&args[0]);
                         process::exit(0);
                     }
-                    // skip main call if more arguments...
-                }
-                // Historical information
-                else if "history".starts_with(arg) {
-                    // TODO - Ticker will consume Info which impl InfoBuilder trait
-                    log(
-                        stdout().lock(),
-                        "Getting historical ticker info.....",
-                        options.verbose,
-                    );
-                    break;
-                }
-                // Last command should be ticker symbol
-                else if arg == &args[args.len() - 1] {
-                    log(
-                        stdout().lock(),
-                        "Getting basic ticker info.....",
-                        options.verbose,
-                    );
-                }
-                // Command not found
-                else {
-                    log(
-                        stdout().lock(),
-                        &format!("{}: invalid command '{}'", &args[0], arg),
-                        true,
-                    );
-                    show_usage(&args[0]);
-                    process::exit(0);
                 }
             }
             // Explore options short and long
-            arg if "help".starts_with(arg) => {
+            arg if is_option(arg, "h", "help") => {
                 show_help(&args[0]);
                 process::exit(0);
             }
-            arg if "nocache".starts_with(arg) => options.nocache = true,
-            arg if "offline".starts_with(arg) => options.offline = true,
-            arg if "quiet".starts_with(arg) => options.quiet = true,
-            arg if "verbose".starts_with(arg) => options.verbose = true,
-            arg if "version".starts_with(arg) || "V" == arg => {
+            arg if is_option(arg, "n", "nocache") => options.nocache = true,
+            arg if is_option(arg, "o", "offline") => options.offline = true,
+            arg if is_option(arg, "q", "quiet") => options.quiet = true,
+            arg if is_option(arg, "v", "verbose") => options.verbose = true,
+            arg if is_option(arg, "V", "version") => {
                 log(
                     stdout().lock(),
                     &format!(
