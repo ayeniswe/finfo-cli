@@ -77,7 +77,7 @@ impl OHLC {
         };
     }
 
-    /// Wri the strength of a candle
+    /// Write the strength of a candle
     pub fn show_strong<T: Write>(&self, mut output: T) {
         let strong_indicator = if self.is_strong(None) { '✅' } else { '❌' };
         let _ = writeln!(output, "Strong: {}", strong_indicator);
@@ -433,15 +433,15 @@ mod tests {
         bar3.show_direction(&mut output3);
         assert_eq!(
             output1.into_inner(),
-            b"Direction: \x1b[32m\xE2\xAC\x86 Up\x1b[0m\n"
+            b"Direction: \x1b[38;2;0;255;0m\xE2\xAC\x86 Up\x1b[0m\n"
         );
         assert_eq!(
             output2.into_inner(),
-            b"Direction: \x1b[31m\xE2\xAC\x87 Down\x1b[0m\n"
+            b"Direction: \x1b[38;2;255;0;0m\xE2\xAC\x87 Down\x1b[0m\n"
         );
         assert_eq!(
             output3.into_inner(),
-            b"Direction: \x1b[33m\xE2\xAC\x8C Side\x1b[0m\n"
+            b"Direction: \x1b[38;2;255;255;0m\xE2\xAC\x8C Side\x1b[0m\n"
         );
     }
 
