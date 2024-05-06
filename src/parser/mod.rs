@@ -1,4 +1,4 @@
-pub mod choice;
+mod choice;
 use crate::stream;
 
 pub fn parse_args(args: Vec<String>) {
