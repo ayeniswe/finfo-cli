@@ -30,7 +30,7 @@ pub fn parse_args(args: Vec<String>) {
                         stream::log(
                             std::io::stdout().lock(),
                             "Getting historical ticker info.....",
-                            choice.verbose.enable,
+                            choice.verbose.get_state(),
                         );
                         break;
                     }
@@ -39,7 +39,7 @@ pub fn parse_args(args: Vec<String>) {
                         stream::log(
                             std::io::stdout().lock(),
                             "Getting basic ticker info.....",
-                            choice.verbose.enable,
+                            choice.verbose.get_state(),
                         );
                     }
                     // Command not found
@@ -59,10 +59,10 @@ pub fn parse_args(args: Vec<String>) {
                 stream::show_help(cmd_name);
                 std::process::exit(0);
             }
-            arg if choice.is_choice(arg, "n", "nocache") => choice.nocache.enable = true,
-            arg if choice.is_choice(arg, "o", "offline") => choice.offline.enable = true,
-            arg if choice.is_choice(arg, "q", "quiet") => choice.quiet.enable = true,
-            arg if choice.is_choice(arg, "v", "verbose") => choice.verbose.enable = true,
+            arg if choice.is_choice(arg, "n", "nocache") => choice.nocache.enable(),
+            arg if choice.is_choice(arg, "o", "offline") => choice.offline.enable(),
+            arg if choice.is_choice(arg, "q", "quiet") => choice.quiet.enable(),
+            arg if choice.is_choice(arg, "v", "verbose") => choice.verbose.enable(),
             arg if choice.is_choice(arg, "V", "version") => {
                 stream::show_license(cmd_name);
                 std::process::exit(0);
@@ -76,7 +76,7 @@ pub fn parse_args(args: Vec<String>) {
                 stream::show_usage(cmd_name);
                 std::process::exit(0);
             }
-        }
+        };
         arg_option = args_iter.next();
     }
 }
