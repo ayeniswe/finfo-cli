@@ -1,4 +1,11 @@
-pub enum Choice {
+#[derive(Default)]
+pub(crate) struct ChoiceFlag {
+    pub(crate) short: char,
+    pub(crate) long: String,
+}
+
+/// ``Choice::Switch`` have the capability to be enabled/disabled
+pub(crate) enum Choice {
     Switch {
         enable: bool,
         short: char,
@@ -11,7 +18,33 @@ pub enum Choice {
 }
 
 impl Choice {
-    pub fn enable(&mut self) {
+    /// Convert `Choice` to `ChoiceFlag`
+    pub(crate) fn _to_flag(&self) -> ChoiceFlag {
+        match self {
+            Choice::Switch { short, long, .. } => ChoiceFlag {
+                short: *short,
+                long: long.to_string(),
+            },
+            Choice::Name { short, long } => ChoiceFlag {
+                short: *short,
+                long: long.to_string(),
+            },
+            // _ =>
+        }
+    }
+
+    /// Set the state of choice to true
+    ///
+    /// The state is true if `enabled` or false if `disabled`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let choice: choice::ChoiceGlossary = choice::ChoiceGlossary::new();
+    /// choice.verbose.enable()
+    /// assert_eq!(choice.verbose.get_state(), true)
+    /// ```
+    pub(crate) fn enable(&mut self) {
         match self {
             Self::Switch { enable, .. } => {
                 *enable = true;
@@ -24,7 +57,16 @@ impl Choice {
         .unwrap_or_default()
     }
 
-    pub fn disable(&mut self) {
+    /// Set the state of choice to false
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let choice: choice::ChoiceGlossary = choice::ChoiceGlossary::new();
+    /// choice.verbose.disable()
+    /// assert_eq!(choice.verbose.get_state(), false)
+    /// ```
+    pub(crate) fn disable(&mut self) {
         match self {
             Self::Switch { enable, .. } => {
                 *enable = false;
@@ -47,7 +89,7 @@ impl Choice {
     /// let choice: choice::ChoiceGlossary = choice::ChoiceGlossary::new();
     /// assert_eq!(choice.verbose.get_state(), false)
     /// ```
-    pub fn get_state(&self) -> bool {
+    pub(crate) fn get_state(&self) -> bool {
         match self {
             Self::Switch { enable, .. } => Ok(*enable),
             _ => Err(String::from(
@@ -57,85 +99,27 @@ impl Choice {
         .unwrap_or_default()
     }
 }
-/// All available choices to use within cli
-pub struct ChoiceGlossary {
-    pub help: Choice,
-    pub nocache: Choice,
-    pub offline: Choice,
-    pub quiet: Choice,
-    pub verbose: Choice,
-    pub version: Choice,
-}
 
-impl ChoiceGlossary {
-    fn _glossary(&self) -> Vec<&Choice> {
-        vec![
-            &self.help,
-            &self.nocache,
-            &self.offline,
-            &self.quiet,
-            &self.verbose,
-            &self.version,
-        ]
-    }
-
-    fn _search(&self) {
-        for choice in self._glossary() {
-            println!("{}", choice.get_state())
-        }
-    }
-
-    pub fn new() -> Self {
-        Self {
-            help: Choice::Switch {
-                enable: false,
-                short: 'h',
-                long: String::from("help"),
-            },
-            nocache: Choice::Switch {
-                enable: false,
-                short: 'n',
-                long: String::from("nocache"),
-            },
-            offline: Choice::Switch {
-                enable: false,
-                short: 'o',
-                long: String::from("offline"),
-            },
-            quiet: Choice::Switch {
-                enable: false,
-                short: 'q',
-                long: String::from("quiet"),
-            },
-            verbose: Choice::Switch {
-                enable: false,
-                short: 'v',
-                long: String::from("verbose"),
-            },
-            version: Choice::Name {
-                short: 'V',
-                long: String::from("version"),
-            },
-        }
-    }
-
-    /// Verify if an argument is a valid choice
-    /// # Examples
-    ///
-    /// ```
-    /// let choice: Choice = Choice::default();
-    /// assert_eq!(choice.is_choice("--hlpre", "h", "help"), false)
-    /// ```
-    pub fn is_choice(&self, arg: &str, short: &str, long: &str) -> bool {
-        self._search();
-        let choice: &str = arg.trim_start_matches("-");
-        return arg.starts_with("--") && long.starts_with(choice)
-            || arg.starts_with("-") && short == choice;
-    }
+#[test]
+fn test_enable() {
+    let mut choice: Choice = Choice::Switch {
+        enable: false,
+        short: 'h',
+        long: String::from("help"),
+    };
+    choice.enable();
+    assert_eq!(choice.get_state(), true);
 }
 
 #[test]
-fn test_is_choice() {
-    let choice: ChoiceGlossary;
-    assert_eq!(choice.is_choice("--hlpre", "h", "help"), false);
+fn test_disable() {
+    let mut choice: Choice = Choice::Switch {
+        enable: false,
+        short: 'h',
+        long: String::from("help"),
+    };
+    choice.enable();
+    assert_eq!(choice.get_state(), true);
+    choice.disable();
+    assert_eq!(choice.get_state(), false);
 }

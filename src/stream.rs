@@ -24,8 +24,8 @@ fn show_art() {
     );
 }
 
-pub fn log<T: std::io::Write>(mut output: T, msg: &str, verbose: bool) {
-    if verbose {
+pub fn log<T: std::io::Write>(mut output: T, msg: &str, verbose: &bool) {
+    if *verbose {
         let _ = writeln!(output, "{}", msg);
     }
 }
@@ -72,4 +72,8 @@ pub fn show_help(cmd_name: &str) {
         "\t{}history{}\t\t\tThe historical information of a ticker",
         FAINT, RESET
     );
+}
+
+pub fn show_license(cmd_name: &str) {
+    println!("{} 0.1.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Samson Ayeni", cmd_name)
 }

@@ -1,8 +1,10 @@
 mod choice;
+mod glossary;
+use self::glossary::Glossary;
 use crate::stream;
 
 pub fn parse_args(args: Vec<String>) {
-    let mut choice: choice::ChoiceGlossary = choice::ChoiceGlossary::new();
+    let mut choice = glossary::ChoiceGlossary::new();
 
     let cmd_name: &str = &args[0];
 
@@ -10,14 +12,28 @@ pub fn parse_args(args: Vec<String>) {
     let mut arg_option: Option<&String> = args_iter.next();
 
     while arg_option.is_some() {
-        let arg = arg_option.unwrap();
+        let arg: &String = arg_option.unwrap();
 
-        match arg.as_str() {
+        // Search glossary for ambigous matches
+        let ambiguous_choices = choice.search(arg);
+        if ambiguous_choices.len() > 1 {
+            print!("{}: option {} is ambiguous; possibilities: ", cmd_name, arg);
+            for choice in ambiguous_choices {
+                print!("'{}' ", choice);
+            }
+            println!();
+
+            stream::show_usage(cmd_name);
+
+            std::process::exit(0);
+        }
+
+        match arg {
             // Explore commands
             arg if !arg.starts_with("-") => {
                 match arg {
                     // Main call <exe name>
-                    arg if arg == args[0] => {
+                    arg if arg == cmd_name => {
                         if args.len() == 1 {
                             stream::show_usage(cmd_name);
                             std::process::exit(0);
@@ -30,7 +46,7 @@ pub fn parse_args(args: Vec<String>) {
                         stream::log(
                             std::io::stdout().lock(),
                             "Getting historical ticker info.....",
-                            choice.verbose.get_state(),
+                            &choice.verbose.get_state(),
                         );
                         break;
                     }
@@ -39,7 +55,7 @@ pub fn parse_args(args: Vec<String>) {
                         stream::log(
                             std::io::stdout().lock(),
                             "Getting basic ticker info.....",
-                            choice.verbose.get_state(),
+                            &choice.verbose.get_state(),
                         );
                     }
                     // Command not found
@@ -47,7 +63,7 @@ pub fn parse_args(args: Vec<String>) {
                         stream::log(
                             std::io::stdout().lock(),
                             &format!("{}: invalid command '{}'", cmd_name, arg),
-                            true,
+                            &true,
                         );
                         stream::show_usage(cmd_name);
                         std::process::exit(0);
@@ -55,15 +71,15 @@ pub fn parse_args(args: Vec<String>) {
                 }
             }
             // Explore choice short and long
-            arg if choice.is_choice(arg, "h", "help") => {
+            arg if choice.is_choice(arg, &choice.help) => {
                 stream::show_help(cmd_name);
                 std::process::exit(0);
             }
-            arg if choice.is_choice(arg, "n", "nocache") => choice.nocache.enable(),
-            arg if choice.is_choice(arg, "o", "offline") => choice.offline.enable(),
-            arg if choice.is_choice(arg, "q", "quiet") => choice.quiet.enable(),
-            arg if choice.is_choice(arg, "v", "verbose") => choice.verbose.enable(),
-            arg if choice.is_choice(arg, "V", "version") => {
+            arg if choice.is_choice(arg, &choice.nocache) => choice.nocache.enable(),
+            arg if choice.is_choice(arg, &choice.offline) => choice.offline.enable(),
+            arg if choice.is_choice(arg, &choice.quiet) => choice.quiet.enable(),
+            arg if choice.is_choice(arg, &choice.verbose) => choice.verbose.enable(),
+            arg if choice.is_choice(arg, &choice.version) => {
                 stream::show_license(cmd_name);
                 std::process::exit(0);
             }
@@ -71,7 +87,7 @@ pub fn parse_args(args: Vec<String>) {
                 stream::log(
                     std::io::stdout().lock(),
                     &format!("{}: invalid option '{}'", cmd_name, arg),
-                    true,
+                    &true,
                 );
                 stream::show_usage(cmd_name);
                 std::process::exit(0);
