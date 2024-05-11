@@ -1,4 +1,4 @@
-use crate::color::{FAINT, GREEN, RED, RESET};
+use super::color::{FAINT, GREEN, RED, RESET};
 
 fn show_art() {
     println!(

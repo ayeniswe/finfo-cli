@@ -1,4 +1,11 @@
-use crate::color::{GREEN, RED, RESET, YELLOW};
+//! This crate handles transformation of price to
+//! indicators, and/or easy to understand text for the user
+//! to comprehend.
+//!
+//! All data from fininacial instruments will pass through
+//! this lib such as Data -> Price(this lib) -> Text/Indicators
+
+use crate::utils::color::{GREEN, RED, RESET, YELLOW};
 use std::io::Write;
 
 /// Open-High-Low-Close (OHLC)
@@ -271,9 +278,9 @@ impl OHLC {
     }
 }
 
-//////// OHLC //////////
+////////// OHLC //////////
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
 
     #[test]
@@ -350,7 +357,6 @@ mod tests {
         assert_eq!(bar2.to_direction(), 'U');
         assert_eq!(bar3.to_direction(), 'N');
     }
-
     #[test]
     fn test_to_range() {
         let bar1: OHLC = OHLC {

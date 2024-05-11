@@ -1,11 +1,10 @@
-pub mod color;
 pub mod parser;
 pub mod price;
-pub mod stream;
+pub mod utils;
 
 fn main() {
     // Gather arguments from terminal
     let args: Vec<String> = std::env::args().collect();
 
-    parser::parse_args(args);
+    _ = parser::parse_args(args);
 }
